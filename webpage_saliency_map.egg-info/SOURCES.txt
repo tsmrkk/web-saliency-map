@@ -1,0 +1,10 @@
+README.md
+setup.py
+webpage_saliency_map/__init__.py
+webpage_saliency_map/cli.py
+webpage_saliency_map/webpage_saliency_map.py
+webpage_saliency_map.egg-info/PKG-INFO
+webpage_saliency_map.egg-info/SOURCES.txt
+webpage_saliency_map.egg-info/dependency_links.txt
+webpage_saliency_map.egg-info/entry_points.txt
+webpage_saliency_map.egg-info/top_level.txt

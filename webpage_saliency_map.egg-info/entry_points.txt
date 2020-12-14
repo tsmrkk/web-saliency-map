@@ -1,0 +1,4 @@
+
+      [console_scripts]
+      webpage_saliency_map = webpage_saliency_map.cli:execute
+    
