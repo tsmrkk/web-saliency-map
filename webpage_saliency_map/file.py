@@ -9,3 +9,6 @@ class Csv:
   def writerow(self ,row):
     self.writer.writerow(row)
 
+  def close(self):
+    self.file.close()
+
