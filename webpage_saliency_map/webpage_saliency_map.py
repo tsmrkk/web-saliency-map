@@ -5,6 +5,7 @@ from element import Element
 from image import Image
 from finalline import getFinalLine
 from finalview import getHighestSaliency, getFinalView
+from finalview2 import CreateRegionMap
 from finaltile import getFinalTile
 
 # main function
@@ -107,8 +108,9 @@ def main():
   webpage.driver.quit()
 
   getFinalLine()
-  getHighestSaliency()
-  getFinalView()
+  # getHighestSaliency()
+  # getFinalView()
+  CreateRegionMap()
   getFinalTile()
 
 if __name__ == '__main__':
