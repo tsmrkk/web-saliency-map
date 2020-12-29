@@ -19,8 +19,10 @@ class SalientRegionMap:
   def __init__(self, saliency_map: list, screenshot: list, tags: pd, custom_tags: pd):
     self.screenshot = screenshot
     self.saliency_map = saliency_map
+    self.canvas = np.zeros((Image(saliency_map).height, Image(saliency_map).width, 3), dtype=np.uint8)
     self.tags = tags
     self.custom_tags = custom_tags
+    self.highest_saliency = self.__GetHighestSaliency()
 
   def GetSortedCustomTagsIndex(self) -> list:
     print(len(self.custom_tags))
@@ -32,7 +34,7 @@ class SalientRegionMap:
   def GetSalientRegionMap(self):
     for i in self.GetSortedCustomTagsIndex():
       self.__PrintElementBySaliency(i, self.custom_tags.iat[i, 0])
-    return self.saliency_map
+    return self.canvas
 
   def CreateImportanceMap(self, high_element_list: list):
     high_element_list_num = len(high_element_list) #配列の長さ取得
@@ -44,14 +46,17 @@ class SalientRegionMap:
       start_y = int(self.custom_tags.iat[high_element, 3])
       end_x = int(self.custom_tags.iat[high_element, 2]+self.custom_tags.iat[high_element, 4])
       end_y = int(self.custom_tags.iat[high_element, 3]+self.custom_tags.iat[high_element, 5])
-      cv2.rectangle(self.saliency_map, (start_x, start_y) , (end_x, end_y), (0, 255-(i)*20, 0), 3) #標準： 20ずつ
+      cv2.rectangle(self.canvas, (start_x, start_y) , (end_x, end_y), (0, 255-(i)*20, 0), 3) #標準： 20ずつ
 
     cv2.namedWindow("halfImg", cv2.WINDOW_NORMAL)
-    cv2.imshow("halfImg", self.saliency_map)
-    cv2.imwrite("./output/final_importance.png", self.saliency_map ) #Save
+    cv2.imshow("halfImg", self.canvas)
+    cv2.imwrite("./output/final_importance.png", self.canvas ) #Save
     k = cv2.waitKey(0)
     if k == 27:         # wait for ESC key to exit
       cv2.destroyAllWindows()
+
+  def __GetHighestSaliency(self) -> float:
+    return self.custom_tags.iat[self.GetHighSaliencyList()[0], 7]
 
   def GetHighSaliencyList(self):
     tag_list_num = len(self.custom_tags)
@@ -133,21 +138,17 @@ class SalientRegionMap:
     start_y = int(self.custom_tags.iat[i, 3])
     end_x = int(self.custom_tags.iat[i, 2]+self.custom_tags.iat[i, 4])
     end_y = int(self.custom_tags.iat[i, 3]+self.custom_tags.iat[i, 5])
-    # ToDo: 調整必要（塗り潰しする際に顕著度が最も高いものに合わせる）
-    correction = 20 # 20
-    salient_level_num = self.custom_tags.iat[i, 7] * 10
+    # 最も顕著度の高い要素を最大輝度で塗りつぶす
+    salient_level_num = (self.custom_tags.iat[i, 7] / self.highest_saliency) * 256
     if type == 'img' and ((end_x - start_x)*(end_y - start_y)) / (Image(self.saliency_map).width * Image(self.saliency_map).height) > 0.1 :
-      # 画像の場合のみそのまま貼り付け
-      # memo どちらか一片の長さが64pxを超える画像はそのまま顕著性マップを表示するように修正する
-      # ただし、現状として画像の取得を確実にできていないように思えるためその箇所を検証後実装する
       if start_x < 0 or start_y < 0 or end_x > Image(self.saliency_map).width or end_y > Image(self.saliency_map).height:
         return
 
       clipped = self.screenshot[start_y:end_y,start_x:end_x]
       print(clipped.shape)
       print(start_x, start_y)
-      self.saliency_map[start_y:clipped.shape[0] + start_y, start_x:clipped.shape[1] + start_x] = clipped
+      self.canvas[start_y:clipped.shape[0] + start_y, start_x:clipped.shape[1] + start_x] = clipped
     else :
       if salient_level_num > 0:
-        cv2.rectangle(self.saliency_map, (start_x, start_y) , (end_x, end_y), (salient_level_num + correction, salient_level_num + correction, salient_level_num + correction), -1)
+        cv2.rectangle(self.canvas, (start_x, start_y) , (end_x, end_y), (salient_level_num, salient_level_num, salient_level_num), -1)
 
