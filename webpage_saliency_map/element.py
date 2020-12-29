@@ -10,6 +10,7 @@ class Element:
 
   def __init__(self, data: list, type: str):
     self.type = type
+    self.layout_type = 1
     if type == 'id':
       self.tag_name = data.get_attribute('id')
     elif type == "class":
@@ -32,70 +33,68 @@ class Element:
     self.d_width = self.d_end_x - self.d_start_x
     self.d_height = self.d_end_y - self.d_start_y
     self.d_area = self.d_width * self.d_height
-    print(self.tag_name)
+    print('[' + self.type + ']' + ' ' +self.tag_name)
     print(self.d_start_x, self.d_start_y, self.d_end_x, self.d_end_y, self.d_width, self.d_height, self.d_area)
 
   @staticmethod
   def GetTotalSaliency():
-    # ToDo なんか出力がおかしいから計算する
     clipped = Element.canvas.cv2[0:int(Element.canvas.height), 0:int(Element.canvas.width)]
     total_saliency_per_row = np.sum(clipped, axis=0)
     total_saliency = np.sum(total_saliency_per_row, axis=0)
     return total_saliency
-    
 
-  def GetAverageColor(self) -> float:
-    if self.start_x < 0:
-      self.start_x = 0
-    if self.start_y < 0:
-      self.start_y = 0
-    if self.start_x < Element.canvas.width and self.start_y < Element.canvas.height and self.width > 0 and self.height > 0:
-      if self.end_x > Element.canvas.width:
-          end_x = int(Element.canvas.width)
-      if self.end_y > Element.canvas.height:
-          end_y = int(Element.canvas.height)
-      clipped = Element.canvas.cv2[int(self.start_y):int(self.end_y), int(self.start_x):int(self.end_x)]
+  # 要素データCSV書き込み関数
+  def WriteDataToCsv(self, csv_writer, csv_tags_custom):
+    average_color = self.__GetAverageColor()
+    salient_level_num = self.GetSalientLevelNum(average_color)
+    if (self.width * self.height) > (Element.canvas.width * 800 / 3):
+      csv_writer.writerow([self.type + '_large', self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
+    else:
+      csv_writer.writerow([self.type, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
+    
+    if salient_level_num > 0:
+      csv_tags_custom.writerow([self.type, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
+
+  # 要素の顕著度を計算する関数（新バージョン）
+  def GetSalientLevelNum(self, average_color) -> float:
+    digit = 4 # 小数点第４位まで
+    digit10 = 10 ** (digit - 1)
+    if self.d_area != 0:
+      salient_level = self.__GetTotalSalientLevel() / (Element.GetTotalSaliency() * (self.d_area / (Element.canvas.width * Element.canvas.height)))
+      salient_level = self.ApplyPositionBias(salient_level)
+    else:
+      salient_level = 0
+    
+    print('Element area: ' + str(self.d_area))
+    print('Total saliency: ' + str(self.__GetTotalSalientLevel()))
+    print('Salient Level: ' + str(salient_level))
+    return math.floor(salient_level * digit10) / digit10
+
+  # 位置情報に関するバイアスを適応
+  def ApplyPositionBias(self, salient_level) -> float:
+    return salient_level
+
+  # 要素の顕著度の平均を取得
+  def __GetAverageColor(self) -> float:
+    if self.d_width > 0 and self.d_height > 0:
+      clipped = Element.canvas.cv2[int(self.d_start_y):int(self.d_end_y), int(self.d_start_x):int(self.d_end_x)]
       average_color_per_row = np.average(clipped, axis=0)
       average_color = np.average(average_color_per_row, axis=0)
       average_color = np.uint8(average_color)
       return average_color
     else:
       return 0
-  
+
   # 要素の顕著度の合計を取得
-  def GetTotalSalientLevel(self) -> float:
-    if self.start_x < 0:
-      self.start_x = 0
-    if self.start_y < 0:
-      self.start_y = 0
-    if self.start_x < Element.canvas.width and self.start_y < Element.canvas.height and self.width > 0 and self.height > 0:
-      if self.end_x > Element.canvas.width:
-          end_x = int(Element.canvas.width)
-      if self.end_y > Element.canvas.height:
-          end_y = int(Element.canvas.height)
-      # print(int(self.start_x), int(self.start_y), int(self.end_x), int(self.end_y))
-      clipped = Element.canvas.cv2[int(self.start_y):int(self.end_y), int(self.start_x):int(self.end_x)]
+  def __GetTotalSalientLevel(self) -> float:
+    if self.d_width > 0 and self.d_height > 0:
+      clipped = Element.canvas.cv2[int(self.d_start_y):int(self.d_end_y), int(self.d_start_x):int(self.d_end_x)]
       total_saliency_per_row = np.sum(clipped, axis=0)
       total_saliency = np.sum(total_saliency_per_row, axis=0)
       return total_saliency
     else:
       return 0
 
-
-  # 要素の顕著度を計算する関数（新バージョン）
-  def GetSalientLevelNum(self, average_color) -> float:
-    # ToDo: 重み付けをタイプごとに変更する方式を採用 
-
-    digit = 4
-    digit10 = 10 ** (digit - 1)
-    print('Total saliency: ' + str(self.GetTotalSalientLevel()))
-    if self.d_area != 0:
-      salient_level = self.GetTotalSalientLevel() / (Element.GetTotalSaliency() * (self.d_area / (Element.canvas.width * Element.canvas.height)))
-    else:
-      salient_level = 0
-    print('Salient Level: ' + str(salient_level))
-    return math.floor(salient_level * digit10) / digit10
-  
   # 要素の顕著度を計算する関数（旧バージョン）
   def GetSalientLevelNumOld(self, average_color) -> float:
     salient_level_weight = (self.end_x - self.start_x) * (self.end_y - self.start_y)
@@ -125,15 +124,3 @@ class Element:
       return salient_level_num
     else:
       return 0
-  
-  def WriteDataToCsv(self, csv_writer, csv_tags_custom):
-    average_color = self.GetAverageColor()
-    salient_level_num = self.GetSalientLevelNum(average_color)
-    if (self.width * self.height) > (Element.canvas.width * 800 / 3):
-      csv_writer.writerow([self.type + '_large', self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
-    else:
-      csv_writer.writerow([self.type, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
-    
-    if salient_level_num > 0:
-      csv_tags_custom.writerow([self.type, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
-    

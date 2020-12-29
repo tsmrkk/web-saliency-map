@@ -50,7 +50,6 @@ def main():
     if str(tag_id.is_displayed()) == "True":  # 表示されている時のみリストに挿入
       element = Element(tag_id, 'id')
       element.WriteDataToCsv(csv_tags, csv_tags_custom)
-      print('要素の顕著度：' + str(element.GetTotalSalientLevel()))
 
   print("Getting position and size of //div[@class]")
   tags_class = webpage.driver.find_elements_by_xpath('//div[@class]')
@@ -58,7 +57,6 @@ def main():
     if str(tag_class.is_displayed()) == "True":  # 表示されている時のみリストに挿入
       element = Element(tag_class, 'class')
       element.WriteDataToCsv(csv_tags, csv_tags_custom)
-      print('要素の顕著度：' + str(element.GetTotalSalientLevel()))
 
   print("Getting position and size of //h1")
   elements = webpage.driver.find_elements_by_xpath('//h1')
@@ -107,11 +105,9 @@ def main():
   csv_tags_custom.close()
   webpage.driver.quit()
 
-  getFinalLine()
-  # getHighestSaliency()
-  # getFinalView()
-  CreateRegionMap()
-  getFinalTile()
+  # getFinalLine()
+  # CreateRegionMap()
+  # getFinalTile()
 
 if __name__ == '__main__':
   main()
