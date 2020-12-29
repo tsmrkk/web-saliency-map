@@ -2,3 +2,7 @@
 !/output/.gitkeep
 /working/*
 !/working/.gitkeep
+!/working/high-saliency/
+/working/high-saliency/*
+!/working/high-saliency/.gitkeep
+
