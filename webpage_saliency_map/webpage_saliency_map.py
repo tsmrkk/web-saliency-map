@@ -95,6 +95,20 @@ def main():
       element = Element(element, 'span')
       element.WriteDataToCsv(csv_tags, csv_tags_custom)
   
+  print("Getting position and size of //p")
+  elements = webpage.driver.find_elements_by_xpath('//p')
+  for element in elements:
+    if str(element.is_displayed()) == "True":
+      element = Element(element, 'p')
+      element.WriteDataToCsv(csv_tags, csv_tags_custom)
+
+  print("Getting position and size of //input")
+  elements = webpage.driver.find_elements_by_xpath('//input')
+  for element in elements:
+    if str(element.is_displayed()) == "True":
+      element = Element(element, 'input')
+      element.WriteDataToCsv(csv_tags, csv_tags_custom)
+  
   print("Getting position and size of //div[@image]")
   elements = webpage.driver.find_elements_by_xpath('//img')
   for element in elements:

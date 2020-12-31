@@ -54,7 +54,7 @@ def getFinalLine():
             if start_x <= width and start_y <= height:
                 cv2.rectangle(halfImg, (start_x, start_y) , (end_x, end_y), (0, 0, 255), 3) # 赤色
 
-        if tag_list.iat[i, 0] == "class":
+        elif tag_list.iat[i, 0] == "class":
             start_x = int(tag_list.iat[i, 2])
             start_y = int(tag_list.iat[i, 3])
             end_x = int(tag_list.iat[i, 2]+tag_list.iat[i, 4])
@@ -65,7 +65,7 @@ def getFinalLine():
             if start_x <= width and start_y <= height:
                 cv2.rectangle(halfImg, (start_x, start_y) , (end_x, end_y), (255, 0, 0), 2) # 青色
 
-        if tag_list.iat[i, 0] == "img":
+        elif tag_list.iat[i, 0] == "img":
             start_x = int(tag_list.iat[i, 2])
             start_y = int(tag_list.iat[i, 3])
             end_x = int(tag_list.iat[i, 2]+tag_list.iat[i, 4])
@@ -76,7 +76,7 @@ def getFinalLine():
             if start_x <= width and start_y <= height:
                 cv2.rectangle(halfImg, (start_x, start_y) , (end_x, end_y), (0, 255, 0), 2) # 緑色
 
-        if tag_list.iat[i, 0] == "a":
+        elif tag_list.iat[i, 0] == "a":
             start_x = int(tag_list.iat[i, 2])
             start_y = int(tag_list.iat[i, 3])
             end_x = int(tag_list.iat[i, 2]+tag_list.iat[i, 4])
@@ -87,7 +87,7 @@ def getFinalLine():
             if start_x <= width and start_y <= height:
                 cv2.rectangle(halfImg, (start_x, start_y) , (end_x, end_y), (255, 255, 0), 2) # 水色
 
-        if tag_list.iat[i, 0] == "span":
+        else:
             start_x = int(tag_list.iat[i, 2])
             start_y = int(tag_list.iat[i, 3])
             end_x = int(tag_list.iat[i, 2]+tag_list.iat[i, 4])
@@ -97,17 +97,6 @@ def getFinalLine():
 
             if start_x <= width and start_y <= height:
                 cv2.rectangle(halfImg, (start_x, start_y) , (end_x, end_y), (0, 255, 255), 2) # 黄色
-
-        if tag_list.iat[i, 0] == "heading" :
-            start_x = int(tag_list.iat[i, 2])
-            start_y = int(tag_list.iat[i, 3])
-            end_x = int(tag_list.iat[i, 2]+tag_list.iat[i, 4])
-            end_y = int(tag_list.iat[i, 3]+tag_list.iat[i, 5])
-
-            print(start_x, start_y, end_x, end_y)
-
-            if start_x <= width and start_y <= height:
-                cv2.rectangle(halfImg, (start_x, start_y) , (end_x, end_y), (255, 255, 255), 2) # 白色
 
 
     # 画像を表示
