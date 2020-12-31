@@ -7,8 +7,9 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from bs4 import BeautifulSoup
 
 class Webpage:
-  def __init__(self, url):
+  def __init__(self, url, layout_type):
     self.url = url
+    self.layout_type = layout_type
     binary = FirefoxBinary('/Applications/Firefox.app/Contents/MacOS/firefox')
     binary.add_command_line_options('-headless')
     self.driver = webdriver.Firefox(firefox_binary=binary)

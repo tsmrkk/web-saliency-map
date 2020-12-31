@@ -11,7 +11,8 @@ from finaltile import getFinalTile
 # main function
 def main():
   url = input("URLを入力してください\n")
-  webpage = Webpage(url)
+  layout_type = input("タイプを選択してください(1-7)\n")
+  webpage = Webpage(url, layout_type)
 
   # スクリーンショット取得
   screenshot = webpage.get_screenshot('screen-pc.png', 1280, 800)
@@ -42,6 +43,7 @@ def main():
 
   # 各要素のサイズと顕著度を取得
   Element.canvas = Image(resize_saliency_map)
+  Element.layout_type = webpage.layout_type
   print('ウェブページ全体の顕著度：' + str(Element.GetTotalSaliency()))
 
   print("Getting position and size of //div[@id]")
@@ -105,9 +107,9 @@ def main():
   csv_tags_custom.close()
   webpage.driver.quit()
 
-  # getFinalLine()
-  # CreateRegionMap()
-  # getFinalTile()
+  getFinalLine()
+  CreateRegionMap()
+  getFinalTile()
 
 if __name__ == '__main__':
   main()
