@@ -1,4 +1,6 @@
 # coding: utf-8
+import cv2
+
 from webpage import Webpage
 from file import Csv
 from element import Element
@@ -39,7 +41,10 @@ def main():
   csv_tags_custom.writerow(default_row)
 
   # ハーフサイズの顕著性マップ
-  resize_saliency_map = Image(saliency_map).get_halfsize()
+  # resize_saliency_map = Image(saliency_map).get_halfsize()
+  saliency_map = Image(cv2.imread('./working/test3.jpg', 1))
+  resize_saliency_map = saliency_map.get_trimming((1280, 726))
+  resize_saliency_map = cv2.cvtColor(resize_saliency_map, cv2.COLOR_BGR2GRAY)
 
   # 各要素のサイズと顕著度を取得
   Element.canvas = Image(resize_saliency_map)

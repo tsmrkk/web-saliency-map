@@ -14,6 +14,11 @@ class Image:
     image = cv2.resize(self.cv2, size)
     return image
 
+  def get_trimming(self, size: tuple) -> cv2:
+    size = (int(size[0]), int(size[1]))
+    image = cv2.resize(self.cv2, size)
+    return image
+
 
 class SalientRegionMap:
   def __init__(self, saliency_map: list, screenshot: list, tags: pd, custom_tags: pd):
