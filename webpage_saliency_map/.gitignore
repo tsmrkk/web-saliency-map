@@ -5,4 +5,7 @@
 !/working/high-saliency/
 /working/high-saliency/*
 !/working/high-saliency/.gitkeep
+/data/*
+!/data/.gitkeep
+!/data/README.md
 
