@@ -145,15 +145,19 @@ class SalientRegionMap:
     end_y = int(self.custom_tags.iat[i, 3]+self.custom_tags.iat[i, 5])
     # 最も顕著度の高い要素を最大輝度で塗りつぶす
     salient_level_num = (self.custom_tags.iat[i, 7] / self.highest_saliency) * 256
-    if type == 'img' and ((end_x - start_x)*(end_y - start_y)) / (Image(self.saliency_map).width * Image(self.saliency_map).height) > 0.1 :
-      if start_x < 0 or start_y < 0 or end_x > Image(self.saliency_map).width or end_y > Image(self.saliency_map).height:
-        return
+    if salient_level_num > 0:
+      cv2.rectangle(self.canvas, (start_x, start_y) , (end_x, end_y), (salient_level_num, salient_level_num, salient_level_num), -1)
 
-      clipped = self.screenshot[start_y:end_y,start_x:end_x]
-      print(clipped.shape)
-      print(start_x, start_y)
-      self.canvas[start_y:clipped.shape[0] + start_y, start_x:clipped.shape[1] + start_x] = clipped
-    else :
-      if salient_level_num > 0:
-        cv2.rectangle(self.canvas, (start_x, start_y) , (end_x, end_y), (salient_level_num, salient_level_num, salient_level_num), -1)
+    # ToDo 現在画像のみそのまま表示するシステムは使用していない
+    # if type == 'img' and ((end_x - start_x)*(end_y - start_y)) / (Image(self.saliency_map).width * Image(self.saliency_map).height) > 0.1 :
+    #   if start_x < 0 or start_y < 0 or end_x > Image(self.saliency_map).width or end_y > Image(self.saliency_map).height:
+    #     return
+
+    #   clipped = self.screenshot[start_y:end_y,start_x:end_x]
+    #   print(clipped.shape)
+    #   print(start_x, start_y)
+    #   self.canvas[start_y:clipped.shape[0] + start_y, start_x:clipped.shape[1] + start_x] = clipped
+    # else :
+    #   if salient_level_num > 0:
+    #     cv2.rectangle(self.canvas, (start_x, start_y) , (end_x, end_y), (salient_level_num, salient_level_num, salient_level_num), -1)
 

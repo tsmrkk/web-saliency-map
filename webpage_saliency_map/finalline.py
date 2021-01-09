@@ -36,10 +36,10 @@ def getFinalLine():
     halfImg = cv2.resize(img, size)
 
     # csvの読み込み
-    tag_list_num = sum(1 for line in open('./working/tag_list.csv'))
+    tag_list_num = sum(1 for line in open('./working/tag_list_original.csv'))
     print(tag_list_num)
 
-    tag_list = pd.read_csv('./working/tag_list.csv')
+    tag_list = pd.read_csv('./working/tag_list_original.csv')
     print(tag_list)
 
     for i in range(tag_list_num - 1):

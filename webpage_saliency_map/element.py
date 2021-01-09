@@ -8,6 +8,7 @@ from image import Image
 class Element:
   canvas = ''
   layout_type = 1
+  model = ''
 
   def __init__(self, data: list, type: str):
     self.type = type
@@ -62,7 +63,9 @@ class Element:
     digit10 = 10 ** (digit - 1)
     if self.d_area != 0:
       salient_level = self.__GetTotalSalientLevel() / (Element.GetTotalSaliency() * (self.d_area / (Element.canvas.width * Element.canvas.height)))
-      salient_level = self.__ApplyPositionBias(salient_level)
+      if Element.model not in ['original', 'original-mlnet']:
+        salient_level = self.__ApplyPositionBias(salient_level)
+        salient_level = self.__ApplySizeBias(salient_level)
     else:
       salient_level = 0
     
@@ -131,6 +134,13 @@ class Element:
 
     if highsaliency:
       return salient_level * 2
+    else:
+      return salient_level
+
+  # サイズに関するバイアスを適応
+  def __ApplySizeBias(self, salient_level: float) -> float:
+    if self.d_area < 500:
+      return salient_level / 2
     else:
       return salient_level
 
