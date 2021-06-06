@@ -53,7 +53,7 @@ class Element:
       csv_writer.writerow([self.type + '_large', self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
     else:
       csv_writer.writerow([self.type, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
-    
+
     if salient_level_num > 0:
       csv_tags_custom.writerow([self.type, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area])
 
@@ -68,7 +68,7 @@ class Element:
         salient_level = self.__ApplySizeBias(salient_level)
     else:
       salient_level = 0
-    
+
     print('Element area: ' + str(self.d_area))
     print('Total saliency: ' + str(self.__GetTotalSalientLevel()))
     print('Salient Level: ' + str(salient_level))
@@ -192,35 +192,5 @@ class Element:
       total_saliency_per_row = np.sum(clipped, axis=0)
       total_saliency = np.sum(total_saliency_per_row, axis=0)
       return total_saliency
-    else:
-      return 0
-
-  # 要素の顕著度を計算する関数（旧バージョン）
-  def GetSalientLevelNumOld(self, average_color) -> float:
-    salient_level_weight = (self.end_x - self.start_x) * (self.end_y - self.start_y)
-    if salient_level_weight > 1000:
-      salient_level_num = average_color
-    elif salient_level_weight > 800:
-      salient_level_num = average_color*0.7
-    elif salient_level_weight > 500:
-      salient_level_num = average_color*0.6
-    else:
-      salient_level_num = average_color*0.2
-    
-    place_weight_x = 0.1  # 最低圧縮値(0~1) 0.1
-    place_weight_y = 0.4  # 最低圧縮値(0~1) 0.3
-    center_weight = 0.2  # 最低圧縮値(0~1) 0.3
-
-    if self.width < int(Element.canvas.width) and self.height < int(Element.canvas.height):
-      topleft_bias = (1 - (place_weight_y - ((int(Element.canvas.height) - (self.start_y + self.height/2)) * place_weight_y / int(Element.canvas.height)))) * (1 - (place_weight_x - ((int(Element.canvas.width) - (self.start_x + self.width/2)) * place_weight_x / int(Element.canvas.width))))
-
-      center_bias_x = abs(int(Element.canvas.width)/2 - (self.start_x + self.width/2)) * \
-                abs(int(Element.canvas.width)/2 - (self.start_x + int(Element.canvas.width)/2))
-      center_bias_y = abs(int(Element.canvas.height)/2 - (self.start_y + self.height/2)) * \
-                abs(int(Element.canvas.height)/2 - (self.start_y + self.height/2))
-      center_bias_calc = np.sqrt(center_bias_x + center_bias_y) / np.sqrt(int(Element.canvas.width) * int(Element.canvas.width) + int(Element.canvas.height) * int(Element.canvas.height))
-
-      salient_level_num = salient_level_num * (topleft_bias - (center_weight * center_bias_calc))
-      return salient_level_num
     else:
       return 0
