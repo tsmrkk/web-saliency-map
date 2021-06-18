@@ -29,6 +29,8 @@ def GetElementInfo(webpage, csv_tags, csv_tags_custom):
   print("Getting position and size of //h1")
   elements = webpage.driver.find_elements_by_xpath('//h1')
   for element in elements:
+    print('#############################')
+    print(element.get_property('previousElementSibling'))
     if str(element.is_displayed()) == "True":
       element = Element(element, 'h1')
       element.WriteDataToCsv(csv_tags, csv_tags_custom)

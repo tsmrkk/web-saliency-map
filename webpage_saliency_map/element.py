@@ -39,6 +39,9 @@ class Element:
     print('[' + self.type + ']' + ' ' +self.tag_name)
     print(self.d_start_x, self.d_start_y, self.d_end_x, self.d_end_y, self.d_width, self.d_height, self.d_area)
 
+  def WriteCSV(self, writer, typeName, average_color, salient_level_num):
+    writer.writerow([typeName, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area, self.selector])
+
   @staticmethod
   def GetTotalSaliency():
     clipped = Element.canvas.cv2[0:int(Element.canvas.height), 0:int(Element.canvas.width)]
@@ -51,12 +54,11 @@ class Element:
     average_color = self.__GetAverageColor()
     salient_level_num = self.GetSalientLevelNum(average_color)
     if (self.width * self.height) > (Element.canvas.width * 800 / 3):
-      csv_writer.writerow([self.type + '_large', self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area, self.selector])
+      self.WriteCSV(csv_writer, self.type + '_large', average_color, salient_level_num)
     else:
-      csv_writer.writerow([self.type, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area, self.selector])
-
+      self.WriteCSV(csv_writer, self.type, average_color, salient_level_num)
     if salient_level_num > 0:
-      csv_tags_custom.writerow([self.type, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area, self.selector])
+      self.WriteCSV(csv_tags_custom, self.type, average_color, salient_level_num)
 
   # 要素の顕著度を計算する関数（新バージョン）
   def GetSalientLevelNum(self, average_color) -> float:
