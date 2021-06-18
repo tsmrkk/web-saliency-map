@@ -10,79 +10,29 @@ from finalline import getFinalLine
 from finalview2 import CreateRegionMap
 from finaltile import getFinalTile
 
+def SetElementInfo(queryName, query, webpage, csv_tags, csv_tags_custom):
+  print(f"Getting position and size of {query}")
+  els = webpage.driver.find_elements_by_xpath(query)
+  for el in els:
+    if str(el.is_displayed()) == "True":  # 表示されている時のみリストに挿入
+      element = Element(el, queryName)
+      element.WriteDataToCsv(csv_tags, csv_tags_custom)
+
 # get element information
 def GetElementInfo(webpage, csv_tags, csv_tags_custom):
-  print("Getting position and size of //div[@id]")
-  tags_id = webpage.driver.find_elements_by_xpath("//div[@id]")
-  for tag_id in tags_id:
-    if str(tag_id.is_displayed()) == "True":  # 表示されている時のみリストに挿入
-      element = Element(tag_id, 'id')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //div[@class]")
-  tags_class = webpage.driver.find_elements_by_xpath('//div[@class]')
-  for tag_class in tags_class:
-    if str(tag_class.is_displayed()) == "True":  # 表示されている時のみリストに挿入
-      element = Element(tag_class, 'class')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //h1")
-  elements = webpage.driver.find_elements_by_xpath('//h1')
-  for element in elements:
-    print('#############################')
-    print(element.get_property('previousElementSibling'))
-    if str(element.is_displayed()) == "True":
-      element = Element(element, 'h1')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //h2")
-  elements = webpage.driver.find_elements_by_xpath('//h2')
-  for element in elements:
-    if str(element.is_displayed()) == "True":
-      element = Element(element, 'h2')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //h3")
-  elements = webpage.driver.find_elements_by_xpath('//h3')
-  for element in elements:
-    if str(element.is_displayed()) == "True":
-      element = Element(element, 'h3')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //a")
-  elements = webpage.driver.find_elements_by_xpath('//a')
-  for element in elements:
-    if str(element.is_displayed()) == "True":
-      element = Element(element, 'link')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //span")
-  elements = webpage.driver.find_elements_by_xpath('//span')
-  for element in elements:
-    if str(element.is_displayed()) == "True":
-      element = Element(element, 'span')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //p")
-  elements = webpage.driver.find_elements_by_xpath('//p')
-  for element in elements:
-    if str(element.is_displayed()) == "True":
-      element = Element(element, 'p')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //input")
-  elements = webpage.driver.find_elements_by_xpath('//input')
-  for element in elements:
-    if str(element.is_displayed()) == "True":
-      element = Element(element, 'input')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
-
-  print("Getting position and size of //div[@image]")
-  elements = webpage.driver.find_elements_by_xpath('//img')
-  for element in elements:
-    if str(element.is_displayed()) == "True":
-      element = Element(element, 'img')
-      element.WriteDataToCsv(csv_tags, csv_tags_custom)
+  queryDict = {
+      "id": "//div[@id]",
+      "class": '//div[@class]',
+      "h1": '//h1',
+      "h2": '//h2',
+      "h3": '//h3',
+      "link": '//a',
+      "span": '//span',
+      "p": '//p',
+      "img": '//img'
+  }
+  for k, v in queryDict.items():
+    SetElementInfo(k, v, webpage, csv_tags, csv_tags_custom)
 
 # main function
 def main(models = None):
