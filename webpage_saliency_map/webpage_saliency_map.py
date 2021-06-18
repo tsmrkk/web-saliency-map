@@ -11,11 +11,12 @@ from finalview2 import CreateRegionMap
 from finaltile import getFinalTile
 
 def SetElementInfo(queryName, query, webpage, csv_tags, csv_tags_custom):
-  print(f"Getting position and size of {query}")
+  # print(f"Getting position and size of {query}")
   els = webpage.driver.find_elements_by_xpath(query)
   for el in els:
     if str(el.is_displayed()) == "True":  # 表示されている時のみリストに挿入
       element = Element(el, queryName)
+      element.SetSelector(el)
       element.WriteDataToCsv(csv_tags, csv_tags_custom)
 
 # get element information
@@ -86,7 +87,7 @@ def main(models = None):
     Element.canvas = Image(resize_saliency_map)
     Element.layout_type = webpage.layout_type
     Element.model = model
-    print('ウェブページ全体の顕著度：' + str(Element.GetTotalSaliency()))
+    # print('ウェブページ全体の顕著度：' + str(Element.GetTotalSaliency()))
 
     GetElementInfo(webpage, csv_tags, csv_tags_custom)
 

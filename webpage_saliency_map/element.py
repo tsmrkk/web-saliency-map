@@ -35,12 +35,8 @@ class Element:
     self.d_height = self.d_end_y - self.d_start_y
     self.d_area = self.d_width * self.d_height
     self.d_center = ((self.d_start_x + self.width/2), (self.start_y + self.height/2))
-    self.selector = "hello"
-    print('[' + self.type + ']' + ' ' +self.tag_name)
-    print(self.d_start_x, self.d_start_y, self.d_end_x, self.d_end_y, self.d_width, self.d_height, self.d_area)
-
-  def WriteCSV(self, writer, typeName, average_color, salient_level_num):
-    writer.writerow([typeName, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area, self.selector])
+    # print('[' + self.type + ']' + ' ' +self.tag_name)
+    # print(self.d_start_x, self.d_start_y, self.d_end_x, self.d_end_y, self.d_width, self.d_height, self.d_area)
 
   @staticmethod
   def GetTotalSaliency():
@@ -48,6 +44,42 @@ class Element:
     total_saliency_per_row = np.sum(clipped, axis=0)
     total_saliency = np.sum(total_saliency_per_row, axis=0)
     return total_saliency
+
+  @staticmethod
+  def GetSiblingElementIndex(el, name):
+    index = 1
+    sib = el
+    while True:
+      sib = sib.get_property("previousElementSibling")
+      if sib == None:
+        break
+      if sib.get_property("nodeName").lower() == name:
+        index += 1
+    return index
+
+  @staticmethod
+  def GetSelectorFromElement(el):
+    names = []
+    while el.get_property("nodeType") == 1:
+      name = el.get_property("nodeName").lower()
+      if el.get_property("id"):
+        name += '#' + el.get_property("id")
+        names.insert(0, name)
+        break
+      index = Element.GetSiblingElementIndex(el, name)
+      if 1 < index :
+        name += ':nth-of-type(' + str(index) + ')'
+      names.insert(0, name)
+      if el.get_property("tagName") == "BODY":
+        break
+      el = el.get_property("parentNode")
+    return " > ".join(names)
+
+  def SetSelector(self, el):
+    self.selector = Element.GetSelectorFromElement(el)
+
+  def WriteCSV(self, writer, typeName, average_color, salient_level_num):
+    writer.writerow([typeName, self.tag_name, self.start_x, self.start_y, self.width, self.height, average_color, salient_level_num, self.d_area, self.selector])
 
   # 要素データCSV書き込み関数
   def WriteDataToCsv(self, csv_writer, csv_tags_custom):
@@ -72,9 +104,9 @@ class Element:
     else:
       salient_level = 0
 
-    print('Element area: ' + str(self.d_area))
-    print('Total saliency: ' + str(self.__GetTotalSalientLevel()))
-    print('Salient Level: ' + str(salient_level))
+    # print('Element area: ' + str(self.d_area))
+    # print('Total saliency: ' + str(self.__GetTotalSalientLevel()))
+    # print('Salient Level: ' + str(salient_level))
     return math.floor(salient_level * digit10) / digit10
 
   # 位置情報に関するバイアスを適応
