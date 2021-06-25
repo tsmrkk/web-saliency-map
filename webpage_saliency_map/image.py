@@ -2,6 +2,7 @@
 import cv2
 import pandas as pd
 import numpy as np
+from file import Csv
 
 class Image:
   def __init__(self, image: cv2):
@@ -28,6 +29,18 @@ class SalientRegionMap:
     self.tags = tags
     self.custom_tags = custom_tags
     self.highest_saliency = self.__GetHighestSaliency()
+
+  def CreateSaliencyCSVRanking(self, high_element_list: list, fileName):
+    csv_writer = Csv(f'./working/{fileName}.csv')
+    default_row = [
+      'selector',
+      'saliency'
+    ]
+    csv_writer.writerow(default_row)
+    for val in high_element_list:
+      selector = self.custom_tags.iat[val, 9]
+      saliency = self.custom_tags.iat[val, 7]
+      csv_writer.writerow([selector, saliency])
 
   def GetSortedCustomTagsIndex(self) -> list:
     print(len(self.custom_tags))
@@ -78,13 +91,17 @@ class SalientRegionMap:
         salient_level.append(self.custom_tags.iat[i, 7])
 
     salient_level_sort_final = np.argsort(salient_level)
-
-    salient_num = 10 # 上位何個表示するか？
+    # もともとは10だったけど、extensionでは10以上必要な為
+    salient_num = len(salient_level_sort_final)
     temporal_num = 1 # 一時的な変数
     salient_num_first = salient_num
 
     while salient_num > 0 :
-      most_salient = salient_level_sort_final[tag_list_num - temporal_num]
+      msi = tag_list_num - temporal_num
+      # 指定したsalient_numの数だけelementがあるとは限らないため
+      if msi < 0:
+        break
+      most_salient = salient_level_sort_final[msi]
       print(most_salient)
       if (most_salient in ng_list) == False:
         start_x = int(self.custom_tags.iat[most_salient, 2])

@@ -90,6 +90,7 @@ class Element:
     else:
       self.WriteCSV(csv_writer, self.type, average_color, salient_level_num)
     if salient_level_num > 0:
+      # TODO salient_level_numでソートしたものを渡すようにする
       self.WriteCSV(csv_tags_custom, self.type, average_color, salient_level_num)
 
   # 要素の顕著度を計算する関数（新バージョン）

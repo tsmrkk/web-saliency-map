@@ -5,7 +5,7 @@ import pandas as pd
 from image import Image, SalientRegionMap
 
 # main function
-def CreateRegionMap(model):
+def CreateRegionMap(model, fileName):
   row_saliencymap = cv2.imread("./output/saliency_map.png", 1)
   row_screenshot = cv2.imread("./working/screen-pc.png", 1)
 
@@ -17,10 +17,11 @@ def CreateRegionMap(model):
 
   # Salient Region Map の生成
   cv2.imwrite('./output/' + model + '.png', salient_region_map.GetSalientRegionMap() )
-  
+
   # 重要領域マップの生成
   if model == 'original':
     high_element_list = salient_region_map.GetHighSaliencyList()
+    salient_region_map.CreateSaliencyCSVRanking(high_element_list, fileName)
     salient_region_map.CreateImportanceMap(high_element_list)
 
 if __name__ == '__main__':

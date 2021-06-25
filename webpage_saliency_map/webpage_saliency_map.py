@@ -42,6 +42,8 @@ def main(models = None):
   print("Generate results -> " + str(models))
   url = input("URLを入力してください\n")
   layout_type = input("タイプを選択してください(1-7)\n")
+  # saliency > 0なelement一覧を保存するファイル名
+  fileName = input("ファイル名を指定してください\n")
   webpage = Webpage(url, layout_type)
 
   # スクリーンショット取得
@@ -94,7 +96,7 @@ def main(models = None):
     # CSVとWebDriverのClose
     csv_tags.close()
     csv_tags_custom.close()
-    CreateRegionMap(model)
+    CreateRegionMap(model, fileName)
 
   webpage.driver.quit()
   getFinalLine()
